@@ -17,10 +17,11 @@ class PpxyController extends Controller
         $data=array();
         //banner
         $banner=Pic::main_banner();
+        $data['banner']=$banner;
         //var_dump($banner);
         //课程类型 数量
         $generaltypes = \App\Models\GeneralType::type_num();
-        $data['banner']=$banner;
+        $data['generaltypes']=$generaltypes;
         //var_dump($generaltypes);
         //最新课程
         $newrooms = \App\Models\Pic::getnewrooms();
