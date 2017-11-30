@@ -405,7 +405,7 @@ class PpxyController extends Controller
                 'member_id'=>$this->member_id,
                 'room_id'=>$room_id
             );
-            $ppxy_pri =\App\Models\Ppxypri::where($filter)->first();
+            $ppxy_pri =\App\Models\PpxyPri::where($filter)->first();
             $ppxy_pri && $this->if_admin = $ppxy_pri->id ? true : false;
             return $ppxy_pri && $ppxy_pri->id ? true : false;
         }
