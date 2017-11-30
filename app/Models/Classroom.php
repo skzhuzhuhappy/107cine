@@ -17,22 +17,120 @@ class Classroom extends Model
     * 查询一条数据
     **/
     public static function find_first($where=array(),$data='*'){
-        return self::where($where)->select($data)->first()->toArray();
+        return self::where($where)->select($data)->first();
     }
 
+    /*
+    *根据sub_id和main_id 获得课程 详情
+    **/
+    public function find_rooms_sub_id_main_id($sub_id,$main_id){
+    	$filter = array();
+        if (!empty($sub_id)) {
+            $filter['sub_id'] = $sub_id;
+        }
+        if (!empty($main_id)) {
+            $filter['main_id'] = $main_id;
+        }    
+        $rooms =$this->courserooms($filter);
+        return $this->room_foreach($rooms);
+    }
 
     /*
     *
     *可能需要的课程
     **/
     public function maybe_need_rooms(){
-
         $rooms = $this->homerooms();
+        return $this->room_foreach($rooms);
+    }
 
-        foreach ($rooms as $key => $room) {
-          $filter_student = array('classroom_id'=>$room['id'], 'from_type'=>'fee');
+    /*
+     * 热门课程
+     * */
+    public function star_rooms(){
+        $rooms = $this->starrooms();
+        return $this->room_foreach($rooms);
+    }
+
+    /*
+    *循环获得课程信息
+    **/
+    public function room_foreach($rooms){
+    	if(is_array($rooms)){
+			foreach ($rooms as $key => $room) {
+	          $filter_student = array('classroom_id'=>$room['id'], 'from_type'=>'fee');
+	          $count_student  = ( new \App\Models\PpxyStudent())->count($room['id']);
+
+	          if ($room['id'] == 35) {
+	              $rule = (new \App\Models\PpxyRule())->inits($room['id']);
+	              $count_student = $rule->up_count() + $rule->ding_count();  //参与总人数
+	          }
+
+	          if ($room['if_online'] == 'N') {
+	              $url = 'ppxy/preroom/'.$room['id'];
+	              $lable = '';
+	              $type_name = '线下实训';
+	          }
+	          else {
+	              $url = 'ppxy/dicroom/'.$room['id'];
+	              $lable = $count_student ? $count_student.'人学习' : '';
+	              $type_name = '系统化';
+	          }
+
+	          if ( $room['if_star'] == 'Y' ) {
+	              //$room->url=   '<img src="front/images/ppxy2/index/star2.png" class="start">';
+	          }else{
+	              $rooms[$key]['url']= $url;
+	              $rooms[$key]['nmb']= $lable;
+	              $rooms[$key]['type']= $type_name;
+	          }
+	          return $rooms;
+	       }
+    	}
+    }
+
+    /*
+    *我的课程
+    **/
+    public function myclass_romm($member_id){
+    	$data = array();
+    	$studens = \App\Models\PpxyStudent::where(array('member_id'=>$member_id))->get();
+        foreach ($studens as $key => $value) {
+            $room = \App\Models\Classroom::find($value->classroom_id);
+            $data[$key]['href']='ppxy/classroom/'.$room->id.'/';
+            $data[$key]['a_value']=$room->v_title;
+            //echo '<li><a href="ppxy/classroom/'.$room->id.'/" target="_blank">'.$room->v_title.'</a> <span class="learn">在学</span>'; 
+            //echo '</li>';
+        }
+
+        if ($this->type == 'admin') {
+            $rooms = \App\Models\Classroom::get();
+            foreach ($rooms as $key => $room) {
+   				$data[$key]['href']='ppxy/classroom/'.$room->id.'/';
+            	$data[$key]['a_value']=$room->v_title;
+                //echo '<li><a href="ppxy/classroom/'.$room->id.'/" target="_blank">'.$room->v_title.'</a></li>';
+            }  
+        }
+        else
+        {
+            $pris =\App\Models\PpxyPri::where(array('member_id'=>$this->member_id))->get();
+            foreach ($pris as $key => $value) {
+                $room = \App\Models\Classroom::find($value->room_id);
+                $data[$key]['href']='ppxy/classroom/'.$room->id.'/';
+            	$data[$key]['a_value']=$room->v_title;
+                //echo '<li><a href="ppxy/classroom/'.$room->id.'/" target="_blank">'.$room->v_title.'</a></li>';
+            }              
+        }
+    }
+
+
+
+   /*
+   * room_box
+   **/
+   public function room_box($room){
+   		$filter_student = array('classroom_id'=>$room['id'], 'from_type'=>'fee');
           $count_student  = \App\Models\PpxyStudent::find($room['id'])->count();
-
           if ($room->id == 35) {
               $rule = \App\Models\ppxy_rule::inits($room['id']);
               $count_student = $rule->up_count() + $rule->ding_count();  //参与总人数
@@ -56,9 +154,7 @@ class Classroom extends Model
               $rooms[$key]['nmb']= $lable;
               $rooms[$key]['type']= $type_name;
           }
-          return $rooms;
-       }
-    }
+   }
 
     /*
 	和学院相关的产品ID
@@ -215,7 +311,14 @@ class Classroom extends Model
 	public function courserooms($filter=array())
 	{
 		$filter['if_course'] = 'Y';
-		return $this->where($filter)->orderby(array('n_weight'=>'asc'))->find_all();
+		return $this->where($filter)->orderBy('n_weight','asc')->get()->toArray();
+	}
+
+	// 热门课程
+	public function starrooms($filter=array())
+	{
+		$filter['if_star'] = 'Y';
+		return $this->where($filter)->orderBy('n_weight','asc')->get()->toArray();
 	}
 
 	// 课程价格
