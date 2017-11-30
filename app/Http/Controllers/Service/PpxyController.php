@@ -314,7 +314,7 @@ class PpxyController extends Controller
 
 
     /*
-    *   个人中心
+    * 个人中心
     **/
     public function platform($type='')
     {

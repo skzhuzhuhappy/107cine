@@ -10,78 +10,51 @@ class PpxyDicroom extends Model
   	protected $primaryKey = 'id' ;
   	public $timestamps = false;
 
+    protected $room_id;
+
     /*
      * 课程详情页
      * */
-    public function dicroom_common($room){
+    public function dicroom_common($room_id){
+        $data = array();
+        if($room_id){
+            $this->room_id = $room_id;
+        }
+        //获取top模块背景图片地址
+        $data['top'] = $this->top_pic_url($this->room_id);
 
         /*
         * 试听课程
         * */
-        (new \App\Models\PpxyVideoAdd())->st_class();
+        $data['shiting'] = (new \App\Models\PpxyVideoAdd())->st_class($this->room_id);
 
-
+        //课程亮点模块
+        $data['high_light'] = $this->high_light($this->room_id);
 
         //报名价格
-        $train_ids = array(5, 35);              //  过山车课程
-        $video_ids = array(35);                     //  直接进入视频频道学习课程
-        if ( in_array($this->room_id, $train_ids) ) {
-            $view = 'ppxy/fee_train';
 
-        }
-        else {
-            $view = 'ppxy/fee_normal';
-        }
 
-        //试听课程
-        $filter = array('room_id'=>$this->room_id, 'type'=>'shiting');
-        $adds = \App\Models\PpxyVideoAdd::where($filter)->orderby('n_weight','asc')->get();
-        if ( count($adds) > 0 ) {
-            foreach ($adds as $key => $add) {
-                $data[$key]['poly_id']=$add->poly_id;
-            }
-        }
 
         //课程介绍模块,获取课程介绍数据
-        $filter = array(
-            'room_id'=>$this->room_id,
-            'type'=>'introduction'
-        );
-        $introduction = \App\Models\PpxyDicroom::where($filter)->first();
-        $content=$introduction->title;
-        $text=$introduction->desc;
+        $data['introduction'] = $this->introduction($this->room_id);
 
 
         //学习方法模块
-        $filter = array(
-            'room_id'=>$this->room_id,
-            'type'=>'learn_method'
-        );
-        $learn_methods = \App\Models\PpxyDicroom::where($filter)->orderby('n_weight','asc')->get();
-        $filter = array(
-            'room_id'=>$this->room_id,
-            'type'=>'learn_method_bg'
-        );
+        $data['learn_methods'] = $this->learn_methods($this->room_id);
 
-        $learn_methods_bg = \App\Models\PpxyDicroom::where($filter)->first();
-        if(!empty($learn_methods_bg)){
-            $learn_methods_bg_url = $learn_methods_bg->background;
-        }else{
-            $learn_methods_bg_url= '';
-        }
+        //课程大纲
+        $data['base_menu_room_id'] = (new \App\Models\PpxyBaseMenu())->base_menu_room_id($this->room_id);
+        //(new \App\Models\PpxyBaseMenu())->menu_info_room_id($this->room_id);
 
-        if(count($learn_methods) > 0){
-            $url=$learn_methods_bg_url;
+        //获取学员评价相关数据
+        $data['comment_room_id'] = $this->comment_room_id($this->room_id);
 
-            foreach($learn_methods as $learn_method){
 
-                if(!empty($learn_method->title)){
-                    $title=$learn_method->title;
-                }
+        //获取导师信息
+        $data['teacher_room_id'] = $this->teacher_room_id($this->room_id);
 
-                $desc=$learn_method->desc;
-            }
-        }
+        //机构动态模块
+        $data['org_room_id'] = $this->org_room_id($this->room_id);
 
 
     }
@@ -92,10 +65,10 @@ class PpxyDicroom extends Model
     /*
      * 背景图片
      * */
-    public function top_pic_url(){
+    public function top_pic_url($room_id){
         //获取top模块背景图片地址
         $filter = array(
-            'room_id'=>$this->room_id,
+            'room_id'=>$room_id,
             'type'=>'top_pic'
         );
         $top_pic =\App\Models\PpxyDicroom::where($filter)->first();
@@ -106,12 +79,59 @@ class PpxyDicroom extends Model
         }
     }
 
+    //课程介绍模块,获取课程介绍数据
+    public function introduction($room_id){
+        $filter = array(
+            'room_id'=>$room_id,
+            'type'=>'introduction'
+        );
+        $introduction = \App\Models\PpxyDicroom::where($filter)->first();
+        $data = array();
+        $data['content']=$introduction->title;
+        $data['text']=$introduction->desc;
+
+        return $data;
+    }
+
+    //学习方法模块
+    public function learn_methods($room_id){
+        //学习方法模块
+        $filter = array(
+            'room_id'=>$room_id,
+            'type'=>'learn_method'
+        );
+        $learn_methods = \App\Models\PpxyDicroom::where($filter)->orderby('n_weight','asc')->get();
+        $filter = array(
+            'room_id'=>$room_id,
+            'type'=>'learn_method_bg'
+        );
+
+        $learn_methods_bg = \App\Models\PpxyDicroom::where($filter)->first();
+        if(!empty($learn_methods_bg)){
+            $learn_methods_bg_url = $learn_methods_bg->background;
+        }else{
+            $learn_methods_bg_url= '';
+        }
+        $data = array();
+        if(count($learn_methods) > 0){
+            $data['url']=$learn_methods_bg_url;
+
+            foreach($learn_methods as $learn_key => $learn_method){
+
+                if(!empty($learn_method->title)){
+                    $data[$learn_key]['title']=$learn_method->title;
+                }
+                $data[$learn_key]['text']=$learn_method->desc;
+            }
+        }
+        return $data;
+    }
     /*
      * 课程亮点
      * */
-    public function high_light{
+    public function high_light($room_id){
         $filter = array(
-            'room_id'=>$this->room_id,
+            'room_id'=>$room_id,
             'type'=>'highlight'
         );
         $highlights = \App\Models\PpxyDicroom::where($filter)->limit(2)->orderby('n_weight','asc')->get();
@@ -128,12 +148,12 @@ class PpxyDicroom extends Model
 
 
     /*
-     * 课程评论
+     * 获取学员评价相关数据
      * */
     public function comment_room_id($room_id){
-        //获取学员评价相关数据
+
         $filter = array(
-            'room_id'=>$this->room_id,
+            'room_id'=>$room_id,
             'type'=>'st_comment'
         );
         $st_comments =$this->where($filter)->select('desc','title','ex_info')->orderby(array('n_weight'=>'asc'))->get();
@@ -145,12 +165,11 @@ class PpxyDicroom extends Model
     }
 
     /*
-     * 导师介绍
+     * //获取导师信息
      * */
     public function teacher_room_id($room_id){
-        //获取导师信息
         $filter = array(
-            'room_id'=>$this->room_id,
+            'room_id'=>$room_id,
             'type'=>'teacher_info'
         );
         $teachers = $this->where($filter)->select('title','desc','background')->orderby(array('n_weight'=>'asc'))->get();
@@ -166,12 +185,11 @@ class PpxyDicroom extends Model
      * 机构动态模块
      * */
     public function org_room_id(){
-        //机构动态模块
         $filter = array(
             'room_id'=>$this->room_id,
             'type'=>'org_affairs'
         );
-        $org_affairs =  $this->->where($filter)->select('ex_info','title','desc')->orderby(array('n_weight'=>'asc'))->get();
+        $org_affairs =  $this->where($filter)->select('ex_info','title','desc')->orderby(array('n_weight'=>'asc'))->get();
 
         if(count($org_affairs) > 0) {
             $i = 1;

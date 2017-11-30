@@ -63,7 +63,7 @@ class PpxyBaseMenu extends Model
     /*
      * 查看全部课程大纲
      * */
-    public function menu_info_room_id(){
+    public function menu_info_room_id($room_id){
         $show_desc = array(47, 25, 51);
         $menus = \App\Models\PpxyBaseMenu::where(array('room_id'=>$room_id))->orderby(array('n_weight'=>'asc'))->get();
         $count = count($menus);
@@ -107,7 +107,7 @@ class PpxyBaseMenu extends Model
         if (count($nodes) > 0) {
             $data = array();
             foreach ($nodes as $key => $node) {
-                $url = 'ppxy/node/'.$room_id.'/'.$node->id
+                $url = 'ppxy/node/'.$room_id.'/'.$node->id;
                 $data[$key]['href'] = $url;
                 $data[$key]['value'] = $node->v_title;
                 $j++;
