@@ -10,7 +10,7 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
-
+Route::get('/', 'Service\MainController@index');
 Route::get('/ppxy/index', 'Service\PpxyController@index');
 Route::get('/ppxy/main_info', 'Service\PpxyController@main_info');
 Route::get('/ppxy/find_json', 'Service\PpxyController@find_json');

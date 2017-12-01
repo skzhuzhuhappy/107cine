@@ -170,7 +170,7 @@ class PpxyController extends Controller
    * */
     public function index(){
 
-        $data=array();
+        $data = array();
         //banner
         $banner=Pic::main_banner();
         $data['banner']=$banner;
@@ -213,7 +213,7 @@ class PpxyController extends Controller
         $m3_result = new M3Result();
         $m3_result->status = 0;
         $m3_result->message = '返回成功';
-        $m3_result->categorys = $data;
+        $m3_result->data = $data;
         return $m3_result->toJson();
 
     }
