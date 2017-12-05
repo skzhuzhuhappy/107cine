@@ -50,7 +50,7 @@ class PicController extends Controller
      */
     public function show($id)
     {
-        $data = (new Classroom())->show($id);
+        $data = (new Pic())->show($id);
         return new \App\Http\Resources\Common($data);
     }
 
