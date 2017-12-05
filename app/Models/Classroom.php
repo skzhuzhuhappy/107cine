@@ -12,11 +12,125 @@ class Classroom extends Model
 
     protected $product_ids = array();
     protected $ym, $next_ym;
+    protected $student_count;
+    /*
+     * index
+     * */
+    public function index($data){
+        var_dump($data);
+
+        //过滤查询条件
+        $pageSize = 10;
+        $page = 1;
+        $filter = $this->zf_search($data);
+        $orderBy = "n_weight";
+        $limit = 0;
+        if(isset($data['per_page'])&&$data['per_page']){
+            $pageSize = $data['per_page'];
+        }
+        if(isset($data['page'])&&$data['page']){
+            $page = $data['page'];
+        }
+        if(isset($data['n_weight'])&&$data['n_weight']){
+            $orderBy = 'n_weight'.','.$data['n_weight'];
+        }
+        if(isset($data['limit'])&&$data['limit']){
+            $res = $this->where($filter)->orderBy($orderBy)->limit($data['limit'])->get();
+        }else{
+            $res = $this->where($filter)->orderBy($orderBy)->paginate($pageSize);
+        }
+
+
+        //学习课程人数
+       /* foreach($res as $k => $room){
+            $res[$k]->student_count = $this->student_count_room_id($room->id);
+        }*/
+
+
+        return $res;
+    }
+
+    /*
+     * 组装查询条件
+     * */
+    public function zf_search($data){
+        $filter = array();
+        $filter['is_del']="N";
+        if(is_array($data)&&$data){
+            if(isset($data['type'])&&$data['type']){
+                $filter['type'] = $data['type'];
+            }
+            if(isset($data['type'])&&$data['type']){
+                $filter['type'] = $data['type'];
+            }
+            if(isset($data['product_id'])&&$data['product_id']){
+                $filter['product_id'] = $data['product_id'];
+            }
+            if(isset($data['is_del'])&&$data['is_del']){
+                $filter['is_del'] = $data['is_del'];
+            }
+            if(isset($data['status'])&&$data['status']){
+                $filter['status'] = $data['status'];
+            }
+            if(isset($data['v_status'])&&$data['v_status']){
+                $filter['v_status'] = $data['v_status'];
+            }
+            if(isset($data['renew_product_id'])&&$data['renew_product_id']){
+                $filter['renew_product_id'] = $data['renew_product_id'];
+            }
+            if(isset($data['main_id'])&&$data['main_id']){
+                $filter['main_id'] = $data['main_id'];
+            }
+            if(isset($data['sub_id'])&&$data['sub_id']){
+                $filter['sub_id'] = $data['sub_id'];
+            }
+            if(isset($data['if_online'])&&$data['if_online']){
+                $filter['if_online'] = $data['if_online'];
+            }
+            if(isset($data['if_star'])&&$data['if_star']){
+                $filter['if_star'] = $data['if_star'];
+            }
+            if(isset($data['if_free'])&&$data['if_free']){
+                $filter['if_free'] = $data['if_free'];
+            }
+            if(isset($data['if_home'])&&$data['if_home']){
+                $filter['if_home'] = $data['if_home'];
+            }
+            if(isset($data['if_course'])&&$data['if_course']){
+                $filter['if_course'] = $data['if_course'];
+            }
+            if(isset($data['if_train'])&&$data['if_train']){
+                $filter['if_train'] = $data['if_train'];
+            }
+        }
+        return $filter;
+    }
+
+    /*
+     * 获得一条
+     * */
+    public function show($id){
+        $res = $this->find($id);
+        return $res;
+    }
+
+
+    /*
+     * 根据 room_id 学习人数
+     * */
+    public function student_count_room_id($room_id){
+        $count_student  = ( new \App\Models\PpxyStudent())->count($room_id);
+        if ($room_id == 35) {
+            $rule = (new \App\Models\PpxyRule())->inits($room_id);
+            $count_student = $rule->up_count() + $rule->ding_count();  //参与总人数
+        }
+        return $count_student;
+    }
 
     /*
     * 查询一条数据
     **/
-    public static function find_first($where=array(),$data='*'){
+    public function find_first($where=array(),$data='*'){
         return self::where($where)->select($data)->first();
     }
 

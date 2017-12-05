@@ -29,6 +29,7 @@ Route::resource('pics', 'Service\PicController',
 //Route::get('classrooms/insert', 'Service\ClassroomController@insert');
 
 Route::group(['prefix' => 'service'], function () {
+
     /*
      * 课程相关
      * */
@@ -46,6 +47,7 @@ Route::group(['prefix' => 'service'], function () {
     //栏目相关
     Route::get('generaltype/index', 'Service\GeneraltypeController@index');
     Route::get('generaltype/main_id/{main_id}/sub_id/{sub_id}', 'Service\GeneraltypeController@getGeneralTypeByMainIdSubId');
+    Route::get('generaltype/typenum', 'Service\GeneraltypeController@typeNum');
     //我的订单
     Route::get('sgorder/my', 'Service\SgorderController@sgorderMy');
 
@@ -54,12 +56,18 @@ Route::group(['prefix' => 'service'], function () {
 
     //
     Route::post('pay/wx_notify', 'Service\PayController@wxNotify');
+
+    Route::resource('classrooms', 'Service\ClassroomController', ['only' => [
+            'index' , 'store' , 'show'
+        ]]
+    );
+    Route::resource('pics', 'Service\PicController', ['only' => [
+            'index' , 'store' , 'show'
+        ]]
+    );
+
 });
 
-Route::resource('service/classrooms', 'Service\ClassroomController', ['only' => [
-        'index' , 'store' , 'show'
-    ]]
-);
 
 Route::get('/user', function () {
     return new \App\Http\Resources\Admin(\App\Models\Admin::paginate(3));

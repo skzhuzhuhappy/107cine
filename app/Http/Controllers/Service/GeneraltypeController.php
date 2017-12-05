@@ -33,6 +33,19 @@ class GeneraltypeController extends Controller
         return $m3_result->toJson();
     }
 
+    /*
+     * 获得类型 数量
+     * */
+    public function typeNum(){
+        $data=\App\Models\GeneralType::type_num();
+        //组装数
+        $m3_result = new M3Result();
+        $m3_result->status = 200;
+        $m3_result->message = '返回成功';
+        $m3_result->data = $data;
+        return $m3_result->toJson();
+    }
+
 
 
 }

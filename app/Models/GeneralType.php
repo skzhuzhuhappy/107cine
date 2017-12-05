@@ -17,13 +17,13 @@ class GeneralType extends Model
     //$data = new Database;
     //$mains = $data->query($sql);
     $mains= DB::select($sql);
-    $pics = array('sort_bg5.jpg', 'sort_bg6.jpg', 'sort_bg8.jpg', 'sort_bg7.jpg');
+    /*$pics = array('sort_bg5.jpg', 'sort_bg6.jpg', 'sort_bg8.jpg', 'sort_bg7.jpg');
     $i = 0;
     foreach ($mains as $key => $main) {
         $main->cum = empty($main->cum) ? 0 : $main->cum;
         $main->pic = 'front/images/ppxy2/index/'.$pics[$i];
         $i++;
-    }
+    }*/
     return $mains;
 
   }

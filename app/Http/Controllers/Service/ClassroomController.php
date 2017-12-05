@@ -2,31 +2,91 @@
 
 namespace App\Http\Controllers\Service;
 
+use App\Http\Resources\ClassroomCollection;
+use App\Http\Resources\CommonCollection;
+use App\Models\Classroom;
 use App\Models\M3Result;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use PhpParser\Node\Stmt\Class_;
 
 class ClassroomController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     *
+     * @return Response
+     */
+    public function index(Request $request)
+    {
+        $input = $request->all();
+        $data = (new Classroom())->index($input);
+        return new \App\Http\Resources\Classroom($data);
+    }
 
-    public function index(){
-        echo "classroom index";
-    }
-    public function store(){
-        echo "classroom store";
-    }
-    public function show($room_id){
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return Response
+     */
+    public function create()
+    {
 
-        echo "classroom show";
     }
-    public function create(){
-        echo 'classroom create';
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @return Response
+     */
+    public function store()
+    {
+
     }
-    public function insert(){
-        echo 'classroom insert';
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return Response
+     */
+    public function show($id)
+    {
+        $data = (new Classroom())->show($id);
+        return new \App\Http\Resources\Common($data);
     }
-    public function build(){
-        echo 'classroom build';
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     * @return Response
+     */
+    public function edit($id)
+    {
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  int  $id
+     * @return Response
+     */
+    public function update($id)
+    {
+        //
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return Response
+     */
+    public function destroy($id)
+    {
+        //
     }
 
     /*
