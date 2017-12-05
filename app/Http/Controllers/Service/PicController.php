@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Service;
 
+use App\Http\Resources\CommonCollection;
 use App\Models\M3Result;
 use App\Models\Pic;
 use Illuminate\Http\Request;

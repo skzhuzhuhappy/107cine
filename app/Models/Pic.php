@@ -10,7 +10,6 @@ class Pic extends Model
     protected  $primaryKey = 'id' ;
     public  $timestamps = false;
 
-
     /*
      * index
      * */
@@ -19,7 +18,8 @@ class Pic extends Model
         $pageSize = 10;
         $page = 1;
         $filter = $this->zf_search($data);
-        $order_filter = "n_weight";
+        $orderBy = "n_weight";
+
 
         if(isset($data['per_page'])&&$data['per_page']){
             $pageSize = $data['per_page'];
@@ -27,12 +27,11 @@ class Pic extends Model
         if(isset($data['page'])&&$data['page']){
             $page = $data['page'];
         }
-        if(isset($data['n_weight'])&&$data['n_weight']){
-            $res = $this->where($filter)->orderBy('n_weight',$data['n_weight'])->paginate($pageSize);
+        if(isset($data['limit'])&&$data['limit']){
+            $res = $this->where($filter)->orderBy($orderBy)->limit($data['limit'])->get();
         }else{
-            $res = $this->where($filter)->orderBy($order_filter)->paginate($pageSize);
+            $res = $this->where($filter)->orderBy($orderBy)->paginate($pageSize);
         }
-
         return $res;
     }
 

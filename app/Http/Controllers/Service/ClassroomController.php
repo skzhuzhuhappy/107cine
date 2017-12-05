@@ -21,7 +21,7 @@ class ClassroomController extends Controller
     {
         $input = $request->all();
         $data = (new Classroom())->index($input);
-        return new \App\Http\Resources\Classroom($data);
+        return new CommonCollection($data);
     }
 
     /**
@@ -89,6 +89,7 @@ class ClassroomController extends Controller
         //
     }
 
+
     /*
      * 课程库
      * */
@@ -141,6 +142,8 @@ class ClassroomController extends Controller
         $m3_result->data = $data;
         return $m3_result->toJson();
     }
+
+
 
 
 }
