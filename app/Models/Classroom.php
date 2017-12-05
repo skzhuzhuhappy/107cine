@@ -23,24 +23,25 @@ class Classroom extends Model
         $page = 1;
         $filter = $this->zf_search($data);
         $select = "*";
+        $order='n_weight';
+        $by='asc';
         if(isset($data['per_page'])&&$data['per_page']){
             $pageSize = $data['per_page'];
         }
         if(isset($data['page'])&&$data['page']){
             $page = $data['page'];
         }
-        if(isset($data['orderby'])&&$data['orderby']){
-            $orderBy=explode(',',$data['orderby']);
-        }else{
-            $orderBy = array('n_weight'=>'asc');
+        if(isset($data['order'])&&$data['order']&&isset($data['by'])&&$data['by']){
+            $order=$data['orderby'];
+            $by=$data['by'];
         }
         if(isset($data['select'])&&$data['select']){
             $select = explode(',',$data['select']);
         }
         if(isset($data['limit'])&&$data['limit']){
-            $res = $this->where($filter)->select($select)->orderBy($orderBy[0],$orderBy[1])->limit($data['limit'])->get();
+            $res = $this->where($filter)->select($select)->orderBy($order,$by)->limit($data['limit'])->get();
         }else{
-            $res = $this->where($filter)->select($select)->orderBy($orderBy[0],$orderBy[1])->paginate($pageSize);
+            $res = $this->where($filter)->select($select)->orderBy($order,$by)->paginate($pageSize);
         }
 
         //学习课程人数
