@@ -94,6 +94,25 @@ class GeneralType extends Model
             return $data;
         }
     }
+
+
+    /*
+ * 获得 menu 列表
+ * */
+    function CateTree($pid=0,$level=0){
+        $array=array();
+        $tmp=$this->where(['parent_id'=>$pid])->orderBy("n_weight","asc")->get()->toArray();
+        if(is_array($tmp)){
+            foreach($tmp as $v){
+                $v['level']=$level;
+                //$v['pid']>0;
+                $array[count($array)]=$v;
+                $sub=$this->CateTree($v['id'],$level+1);
+                if(is_array($sub))$array=array_merge($array,$sub);
+            }
+        }
+        return $array;
+    }
         
 
 }

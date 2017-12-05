@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Route;
 
 class PpxysController extends Controller
 {
-    
+
     public $template = 'ppxy/template';
     public $pri_actions = array(
             'node', 'classroom', 'add', 'edit', 'delnode', 
@@ -209,9 +209,10 @@ class PpxysController extends Controller
         $tab_four=$job->getJobList($ids_four);
         $data['tab_four']=$tab_four;
 
+
         //组装数
         $m3_result = new M3Result();
-        $m3_result->status = 0;
+        $m3_result->status = 200;
         $m3_result->message = '返回成功';
         $m3_result->data = $data;
         return $m3_result->toJson();

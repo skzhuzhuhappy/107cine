@@ -54,6 +54,7 @@ class Pic extends Model
         foreach ($newstreams as $key => $newstream) {
           $stream =\App\Models\Stream::where(['id'=>$newstream['rel_id']])
           ->select('id','d_time','v_title')
+          ->orderBy('d_time', 'desc')
           ->first();
           $newstreams[$key]['date'] = isset($stream->id) ? substr($stream->d_time, 0, 10) : substr($newstream['d_time'], 0, 10);
           $newstreams[$key]['title'] = ($newstream['v_title']) ? $newstream['v_title'] : $stream->v_title;
@@ -62,8 +63,9 @@ class Pic extends Model
         return $newstreams;
     }
 
-
-
+    /*
+     * 根据 v_type 获得动态
+     * */
     public static function getbytype($type='ppxy_newstream',$limit='4'){
         return self::where(array('v_type'=>$type))
         ->orderBy('n_weight', 'asc')

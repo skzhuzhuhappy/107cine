@@ -13,8 +13,9 @@ class SgOrder extends Model
     /*
      * 我的订单
      * */
-    public function  my_order(){
+    public function  sgorderMy($member_id){
         $ids = (new \App\Models\Classroom())->get_product_ids();
+
         $rules = \App\Models\PpxyRule::all();
         foreach ($rules as $key => $rule) {
             $ids[] = $rule->ding_id;
@@ -22,9 +23,11 @@ class SgOrder extends Model
         /*
          * 需要修改
          * */
-        $orders = \App\Models\SgOrder::where(array('member_id'=>$this->member_id, 'is_del'=>'N'))
+
+        $orders = $this->where(array('member_id'=>$member_id, 'is_del'=>'N'))
             ->whereIn('sg_product_id',$ids)->orderBy('id','desc')->get();
         $data = array();
+
         foreach ($orders as $key => $order) {
             $product = \App\Models\MallProduct::find($order->sg_product_id);
             $url = 'ppxyorder/info/'.$order->id;

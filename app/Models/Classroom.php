@@ -23,7 +23,7 @@ class Classroom extends Model
     /*
     *根据sub_id和main_id 获得课程 详情
     **/
-    public function find_rooms_sub_id_main_id($sub_id,$main_id){
+    public function find_rooms_sub_id_main_id($main_id,$sub_id){
     	$filter = array();
         if (!empty($sub_id)) {
             $filter['sub_id'] = $sub_id;
@@ -35,6 +35,17 @@ class Classroom extends Model
         return $this->room_foreach($rooms);
     }
 
+    /*
+     * 根据 main_id 获得课程 详情
+     * */
+    public function find_rooms_main_id($main_id){
+        $filter = array();
+        if (!empty($main_id)) {
+            $filter['main_id'] = $main_id;
+        }
+        $rooms =$this->courserooms($filter);
+        return $this->room_foreach($rooms);
+    }
     /*
     *
     *可能需要的课程
@@ -89,6 +100,8 @@ class Classroom extends Model
     	}
     }
 
+
+
     /*
     *我的课程
     **/
@@ -137,9 +150,7 @@ class Classroom extends Model
           }
 
           if ($room->if_online == 'N') {
-              $url = 'ppxy/preroom/'.$room['id'];
-              $lable = '';
-              $type_name = '线下实训';
+             PpxyPreroom::find_first($room['id']);
           }
           else {
               $url = 'ppxy/dicroom/'.$room['id'];
@@ -300,6 +311,14 @@ class Classroom extends Model
         }
         return $url;
 	}
+
+    /*
+     * 类型课程
+     * */
+    public function room_type($type){
+        $rooms=$this->where(array($type=>'Y'))->orderBy('n_weight','asc')->get()->toArray();
+        return $this->room_foreach($rooms);
+    }
 
 	// 首页课程
 	public function homerooms()

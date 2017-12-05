@@ -19,6 +19,8 @@ class cine{
         }
     }
 
+
+
     public static function upload_image($files, $dir, $width='', $height='', $if_crop = false)
     {
         $demand_rate = $width/$height;
