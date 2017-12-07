@@ -13,6 +13,66 @@ class PpxyDicroom extends Model
     protected $room_id;
 
     /*
+    * index
+    * */
+    public function index($data)
+    {
+        //过滤查询条件
+        $pageSize = 10;
+        $page = 1;
+        $filter = $this->zf_search($data);
+        $select = "*";
+        $order = 'n_weight';
+        $by = 'asc';
+        if (isset($data['per_page']) && $data['per_page']) {
+            $pageSize = $data['per_page'];
+        }
+        if (isset($data['page']) && $data['page']) {
+            $page = $data['page'];
+        }
+        if (isset($data['order']) && $data['order'] && isset($data['by']) && $data['by']) {
+            $order = $data['orderby'];
+            $by = $data['by'];
+        }
+        if (isset($data['select']) && $data['select']) {
+            $select = explode(',', $data['select']);
+        }
+        $list = $this->where($filter)->select($select);
+
+        $res = $list->orderBy($order, $by)->paginate($pageSize);
+
+
+        return $res;
+    }
+
+    /*
+     * 组装查询条件
+     * */
+    public function zf_search($data)
+    {
+        $filter = array();
+        if (is_array($data) && $data) {
+            if (isset($data['room_id']) && $data['room_id']) {
+                $filter['room_id'] = $data['room_id'];
+            }
+            if (isset($data['type']) && $data['type']) {
+                $filter['type'] = $data['type'];
+            }
+        }
+        return $filter;
+    }
+
+    /*
+     * 获得一条
+     * */
+    public function show($id)
+    {
+        $res = $this->find($id);
+        return $res;
+    }
+
+
+    /*
      * 课程详情页
      * */
     public function dicroom_common($room_id){
@@ -181,46 +241,7 @@ class PpxyDicroom extends Model
     }
 
 
-    /*
-     * 机构动态模块
-     * */
-    public function org_room_id(){
-        $filter = array(
-            'room_id'=>$this->room_id,
-            'type'=>'org_affairs'
-        );
-        $org_affairs =  $this->where($filter)->select('ex_info','title','desc')->orderby(array('n_weight'=>'asc'))->get();
 
-        if(count($org_affairs) > 0) {
-            $i = 1;
-            $total = count($org_affairs);
-
-            /*foreach ($org_affairs as $org_affair) {
-                if ($i < 4) {
-                    echo '<div class="item">';
-                    echo '<span class="num">' . $org_affair->ex_info . '</span>';
-                    echo '<dl><dt>' . $org_affair->title . '</dt><dd>' . $org_affair->desc . '</dd></dl>';
-                    echo '</div>';
-                } elseif ($i == 4) {
-                    echo '<div class="more">';
-                    echo '<span>显示全部动态</span>';
-                    echo '<div class="item">';
-                    echo '<span class="num">' . $org_affair->ex_info . '</span>';
-                    echo '<dl><dt>' . $org_affair->title . '</dt><dd>' . $org_affair->desc . '</dd></dl>';
-                    echo '</div></div>';
-                } elseif ($i==$total-1) {
-                    echo '<div class="item no-border">';
-                    echo '<span class="num">' . $org_affair->ex_info . '</span>';
-                    echo '<dl><dt>' . $org_affair->title . '</dt><dd>' . $org_affair->desc . '</dd></dl>';
-                    echo '</div>';
-                }
-            }*/
-
-            return $org_affairs;
-        }else{
-            return array();
-        }
-    }
 
 
 }

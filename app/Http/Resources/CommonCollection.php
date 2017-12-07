@@ -14,6 +14,8 @@ class CommonCollection extends ResourceCollection
      */
     public function toArray($request)
     {
+        $request->status=200;
+        $request->msg='请求成功';
         return parent::toArray($request);
     }
 }

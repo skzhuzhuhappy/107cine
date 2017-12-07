@@ -5,12 +5,14 @@ namespace App\Http\Controllers\Service;
 use App\Http\Resources\ClassroomCollection;
 use App\Http\Resources\CommonCollection;
 use App\Models\Classroom;
+use App\Models\CompanyMember;
+use App\Models\Job;
 use App\Models\M3Result;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use PhpParser\Node\Stmt\Class_;
 
-class ClassroomController extends Controller
+class CompanymemberController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -19,7 +21,7 @@ class ClassroomController extends Controller
      */
     public function index(Request $request)
     {
-        $data = (new Classroom())->index($request->all());
+        $data = (new CompanyMember())->index($request->all());
         return new CommonCollection($data);
     }
 
@@ -46,19 +48,19 @@ class ClassroomController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int $id
+     * @param  int  $id
      * @return Response
      */
     public function show($id)
     {
-        $data = (new Classroom())->show($id);
+        $data = (new CompanyMember())->show($id);
         return new \App\Http\Resources\Common($data);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int $id
+     * @param  int  $id
      * @return Response
      */
     public function edit($id)
@@ -69,7 +71,7 @@ class ClassroomController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  int $id
+     * @param  int  $id
      * @return Response
      */
     public function update($id)
@@ -80,13 +82,19 @@ class ClassroomController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int $id
+     * @param  int  $id
      * @return Response
      */
     public function destroy($id)
     {
         //
     }
+
+
+
+
+
+
 
 
 }

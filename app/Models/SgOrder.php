@@ -10,6 +10,29 @@ class SgOrder extends Model
   	protected $primaryKey = 'id' ;
   	public $timestamps = false;
 
+
+    //付定金人数
+    public function ding_count($room_id)
+    {
+        $filter = array('sg_product_id'=>$this->ding_id, 'v_type'=>'success');
+        $ding_count = $this::where($filter)->count();
+        return $ding_count;
+    }
+
+    //爬坡阶段付款人数
+    public function up_count($room_id)
+    {
+
+        $filter = array(
+            'sg_product_id'=>$this->product->id,
+            'v_type'=>'success',
+            'orderamount>='=>0,
+            'd_time >'=>$this->up_start_time
+        );
+        $count = $this::where($filter)->count();
+        return $count;
+    }
+
     /*
      * 我的订单
      * */
@@ -67,4 +90,6 @@ class SgOrder extends Model
 
         return $data;
     }
+
+
 }

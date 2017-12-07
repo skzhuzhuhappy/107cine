@@ -168,7 +168,7 @@ class PpxyStudent extends Model
         return false;
     }
 
-    // 会员数
+    // 学习课程会员数
     public function count($room_id)
     {
         $filter = array('classroom_id'=>$room_id, 'from_type'=>'fee');

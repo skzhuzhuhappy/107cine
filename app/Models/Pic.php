@@ -18,7 +18,8 @@ class Pic extends Model
         $pageSize = 10;
         $page = 1;
         $filter = $this->zf_search($data);
-        $orderBy = "n_weight";
+        $order = 'n_weight';
+        $by = 'asc';
 
 
         if(isset($data['per_page'])&&$data['per_page']){
@@ -27,10 +28,14 @@ class Pic extends Model
         if(isset($data['page'])&&$data['page']){
             $page = $data['page'];
         }
+        if(isset($data['order'])&&$data['order']&&isset($data['by'])&&$data['by']){
+            $order = $data['order'];
+            $by = $data['by'];
+        }
         if(isset($data['limit'])&&$data['limit']){
-            $res = $this->where($filter)->orderBy($orderBy)->limit($data['limit'])->get();
+            $res = $this->where($filter)->orderBy($order,$by)->limit($data['limit'])->get();
         }else{
-            $res = $this->where($filter)->orderBy($orderBy)->paginate($pageSize);
+            $res = $this->where($filter)->orderBy($order,$by)->paginate($pageSize);
         }
         return $res;
     }

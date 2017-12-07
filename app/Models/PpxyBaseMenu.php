@@ -10,114 +10,66 @@ class PpxyBaseMenu extends Model
   	protected $primaryKey = 'id' ;
   	public $timestamps = false;
 
-    //课程大纲
-    public function base_menu_room_id($room_id){
-        $show_desc = array(47, 25, 51);
-        $menus = \App\Models\PpxyBaseMenu::where(array('room_id'=>$room_id))->orderby(array('n_weight'=>'asc'))->get();
-        $count = count($menus);
-        $i = 1;
-        $more_text = '显示全部课程大纲';
-        $data = array();
-
-        foreach ($menus as $key => $menu) {
-
-            if ($i >= $count) {
-                break;
-            }
-            /*if ($i == 4) {
-                echo '<div class="more more_h"><i class="icon-control-arr-copy-copy"></i><span>'.$more_text.'</span>';
-            }*/
-
-            $data[$key]['number'] = $i;
-            $data[$key]['v_name'] = $menu->v_name;
-            /*if ( in_array($room_id, $show_desc) ) {
-                echo html::simple_show_content($menu->t_des);
-                $data[$key]['v_name'] = $menu->t_des;
-            }
-            else {
-                $this->item($menu, $room_id);
-            }*/
-
-
-            $i++;
+    /*
+    * index
+    * */
+    public function index($data)
+    {
+        //过滤查询条件
+        $pageSize = 10;
+        $page = 1;
+        $filter = $this->zf_search($data);
+        $select = "*";
+        $order = 'n_weight';
+        $by = 'asc';
+        if (isset($data['per_page']) && $data['per_page']) {
+            $pageSize = $data['per_page'];
         }
+        if (isset($data['page']) && $data['page']) {
+            $page = $data['page'];
+        }
+        if (isset($data['order']) && $data['order'] && isset($data['by']) && $data['by']) {
+            $order = $data['orderby'];
+            $by = $data['by'];
+        }
+        if (isset($data['select']) && $data['select']) {
+            $select = explode(',', $data['select']);
+        }
+        $list = $this->where($filter)->select($select);
 
+        $res = $list->orderBy($order, $by)->paginate($pageSize);
 
-        return $data;
-
-
-        /*if ($i > 4) {
-            if ($room->id == 25) {
-                echo '<div class="item"> 持续更新中…… </div>';
-            }
-            echo '</div>';
-        }*/
-
-
-        /*echo '<div class="item no-border"><span class="num"><span class="num_icon"></span>'.$i.'</span><dl><dt>'.$menu->v_name.'</dt><dd>';
-        item($menu, $room);
-        echo '</dd></dl></div>';*/
+        return $res;
     }
-
 
     /*
-     * 查看全部课程大纲
+     * 组装查询条件
      * */
-    public function menu_info_room_id($room_id){
-        $show_desc = array(47, 25, 51);
-        $menus = \App\Models\PpxyBaseMenu::where(array('room_id'=>$room_id))->orderby(array('n_weight'=>'asc'))->get();
-        $count = count($menus);
-        $i = 1;
-        $more_text = '显示全部课程大纲';
-        $data = array();
-
-        foreach ($menus as $key => $menu) {
-
-            if ($i >= $count) {
-                break;
-            }
-            /*if ($i == 4) {
-                echo '<div class="more more_h"><i class="icon-control-arr-copy-copy"></i><span>'.$more_text.'</span>';
-            }*/
-
-            $data[$key]['number'] = $i;
-            $data[$key]['v_name'] = $menu->v_name;
-            /*if ( in_array($room_id, $show_desc) ) {
-                echo html::simple_show_content($menu->t_des);
-                $data[$key]['v_name'] = $menu->t_des;
-            }
-            else {
-
-            }*/
-
-            $data[$key]['item'] = $this->item($menu, $room_id);
-            $i++;
-        }
-        return $data;
-    }
-
-
-
-
-
-    function item($menu, $room_id)
+    public function zf_search($data)
     {
-        $nodes = \App\Models\PpxyNode::where(array('menu_id'=>$menu->id))->orderby(array('n_weight'=>'asc'))->find_all();
-        $j = 1;
-        if (count($nodes) > 0) {
-            $data = array();
-            foreach ($nodes as $key => $node) {
-                $url = 'ppxy/node/'.$room_id.'/'.$node->id;
-                $data[$key]['href'] = $url;
-                $data[$key]['value'] = $node->v_title;
-                $j++;
+        $filter = array();
+        if (is_array($data) && $data) {
+            if (isset($data['room_id']) && $data['room_id']) {
+                $filter['room_id'] = $data['room_id'];
             }
-            return $data;
+            if (isset($data['parent_id']) && $data['parent_id']) {
+                $filter['parent_id'] = $data['parent_id'];
+            }
         }
-        else {
-            return $menu->t_des;
-        }
+        return $filter;
     }
+
+    /*
+     * 获得一条
+     * */
+    public function show($id)
+    {
+        $res = $this->find($id);
+        return $res;
+    }
+
+
+
 
 
 }
